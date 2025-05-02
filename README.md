@@ -12,7 +12,7 @@ This project aims to make a fully functional chess game built with python and Py
 
 ## Status
 
-Project is in very early development and there isnt really anything to show or use yet
+Project is in very early development and there isn't really anything to show or use yet
 
 
 ## Planned Usage (project not yet runnable)
@@ -24,7 +24,7 @@ Project is in very early development and there isnt really anything to show or u
 ## Roadmap
 
 - [x] Project Setup
-- [ ] Board Reperesentation
+- [ ] Board Representation
 - [ ] Piece Logic
 - [ ] Board Manager
 - [ ] GUI
@@ -33,7 +33,7 @@ Project is in very early development and there isnt really anything to show or u
 
 ## Contributing
 
-This is (curretnly) a personal learning project, but suggestions and feedback are welcome.
+This is (currently) a personal learning project, but suggestions and feedback are welcome.
 
 
 ## License
