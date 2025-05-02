@@ -36,6 +36,12 @@ class Piece(ABC):
         """Returns the symbol that represents the piece"""
         pass
 
+    @property
+    @abstractmethod
+    def value(self) -> int:
+        """Returns the value of the piece"""
+        pass
+
 
 class Pawn(Piece):
     """Class representing a pawn"""
