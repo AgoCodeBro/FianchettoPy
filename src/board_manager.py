@@ -27,6 +27,13 @@ class BoardManager():
             if end in legal_moves:
                 self.board[end[0]][end[1]] = piece
                 self.board[start[0]][start[1]] = None
+                piece.has_moved = True
+
+                if self.en_passant:
+                    # Check if En Passant was just played, if it was, remove the pawn
+                    if type(piece).__name__ == "Pawn":
+                        if end == (self.en_passant_pos[0], self.en_passant_pos[1] + 1) or end == (self.en_passant_pos[0], self.en_passant_pos[1] - 1):
+                            self.board[self.en_passant_pos[0]][self.en_passant_pos[1]] = None
 
                 self.check_en_passant(piece, start, end)
 
@@ -47,28 +54,28 @@ class BoardManager():
             start (tuple[int, int]): Square the piece started on
             end (tuple[int, int]): Square the piece ended on
         """
-        if type(piece).__Name__ == "Pawn":
+        if type(piece).__name__ == "Pawn":
             if start[1] - end[1] == 2 or start[1] - end[1] == -2:
                 if end[0] + 1 <= 7:
                     square_to_the_right = self.board[end[0] + 1][end[1]]
 
-                    if type(square_to_the_right).__Name__ == "Pawn" and square_to_the_right.color != piece.color:
-                        en_passant = True
-                        en_passant_pos = end
+                    if type(square_to_the_right).__name__ == "Pawn" and square_to_the_right.color != piece.color:
+                        self.en_passant = True
+                        self.en_passant_pos = end
                         return
 
                 if end[0] - 1 >= 0:
                     square_to_the_left = self.board[end[0] - 1][end[1]]
 
-                    if type(square_to_the_left).__Name__ == "Pawn" and square_to_the_left.color != piece.color:
-                        en_passant = True
-                        en_passant_pos = end
+                    if type(square_to_the_left).__name__ == "Pawn" and square_to_the_left.color != piece.color:
+                        self.en_passant = True
+                        self.en_passant_pos = end
                         return
                     
-        en_passant = False
-        en_passant_pos = None
+        self.en_passant = False
+        self.en_passant_pos = None
 
     def check_promotion(self, piece: Piece, end: tuple[int, int]) -> None:
-        if type(piece).__Name__ == "Pawn" and (end[1] == 0 or end[1] == 1):
+        if type(piece).__name__ == "Pawn" and (end[1] == 0 or end[1] == 1):
             print("this pawn should promote")
         
