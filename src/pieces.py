@@ -386,3 +386,65 @@ class Queen(Rook, Bishop):
         return moves
     
 
+class Knight(Piece):
+    """Class representing a knight
+
+    Attributes:
+        color (Color): Tracks what color a piece is
+        _symbol (str): Symbol that represents the piece type
+        _value (int): Integer representing point value of the piece
+        has_moved (bool): Flag that says if this piece has moved from its starting square
+    """
+
+    def __init__(self, color: Color, has_moved: bool = False) -> None:
+        """Creates an instance of a knight of the given color
+
+        Args:
+            color (Color): The color of the piece
+            has_moved (bool): Flag that says if this piece has moved from its starting square, Defaults to false
+        """
+        super().__init__(color, has_moved)
+        self._symbol = 'N'
+        self._value = 3
+
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+        """Returns a list of all the valid moves the piece can make
+
+        Args:
+            position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
+            game (BoardManager): A representation of the board itself.
+
+        Return:
+            list of coordinates where the piece can end up
+        """
+        moves = []
+        choices = [(1, 2), (1 ,-2), (2, 1), (2, -1), (-1, 2), (-1 ,-2), (-2, 1), (-2, -1)]
+
+        for choice in choices:
+            if self.is_on_board(position, choice):
+                if game.board[position[0] + choice[0]][position[1] + choice[1]] == None:
+                    moves.append((position[0] + choice[0], position[1] + choice[1]))
+
+                elif game.board[position[0] + choice[0]][position[1] + choice[1]].color != self.color:
+                    moves.append((position[0] + choice[0], position[1] + choice[1]))
+
+        return moves
+
+
+    def is_on_board(self, position: tuple[int, int], choice: tuple[int, int]) -> bool:
+        """Checks if moving from the current position to the choice ends up on the board
+
+        Args:
+            position (tuple[int, int]): Holds the current position of the knight
+            choice (tuple[int, int]): Holds the direction we are trying to move
+
+        Returns: flag indicating if knight would end up on the board or not
+        """
+        if (position[0] + choice[0]) > 7 or (position[0] + choice[0]) < 0:
+            return False
+        
+        elif (position[1] + choice[1]) > 7 or (position[1] + choice[1]) < 0:
+            return False
+        
+        else:
+            return True
