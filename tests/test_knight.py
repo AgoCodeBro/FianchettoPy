@@ -8,7 +8,7 @@ from board_manager import BoardManager
 from pieces import Knight, Color
 
 class TestKnight(unittest.TestCase):
-    def test_kinight_move(self):
+    def test_knight_move(self):
         game = self._generate_knights()
         game.move((6,0), (5,2))
         game.move((6,7), (5,5))

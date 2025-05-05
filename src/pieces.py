@@ -448,3 +448,48 @@ class Knight(Piece):
         
         else:
             return True
+        
+
+class King(Piece):
+    """Class representing a king
+
+    Attributes:
+        color (Color): Tracks what color a piece is
+        _symbol (str): Symbol that represents the piece type
+        _value (int): Integer representing point value of the piece
+        has_moved (bool): Flag that says if this piece has moved from its starting square
+    """
+
+    def __init__(self, color: Color, has_moved: bool = False) -> None:
+        """Creates an instance of a king of the given color
+
+        Args:
+            color (Color): The color of the piece
+            has_moved (bool): Flag that says if this piece has moved from its starting square, Defaults to false
+        """
+        super().__init__(color, has_moved)
+        self._symbol = 'K'
+        self._value = None
+
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+        """Returns a list of all the valid moves the piece can make
+
+        Args:
+            position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
+            game (BoardManager): A representation of the board itself.
+
+        Return:
+            list of coordinates where the piece can end up
+        """
+        moves = []
+        choices = [0, 1, -1]
+        x = position[0]
+        y = position[1]
+
+        for i in choices:
+            for j in choices:
+                if x + i >= 0 and y + j >= 0 and x + i <= 7 and y + j <= 7:
+                    if game.board[x + i][y + j] is None or game.board[x + i][y + j].color != self.color:
+                        moves.append((x + i, y + j))
+
+        return moves
