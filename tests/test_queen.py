@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from board_manager import BoardManager
-from pieces import Piece, Queen, Color
+from pieces import Queen, Color
 
 class TestQueen(unittest.TestCase):
     def test_queen_move(self):
