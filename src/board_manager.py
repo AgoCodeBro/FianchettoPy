@@ -21,9 +21,12 @@ class BoardManager():
     def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
         piece = self.board[start[0]][start[1]]
 
-        if piece is not None:
-            legal_moves = piece.generate_valid_moves(start, self.board, self.en_passant, self.en_passant_pos)
 
+        # Check if a piece was selected
+        if piece is not None:
+            legal_moves = piece.generate_valid_moves(start, self)
+
+            # Check if the attempted move is allowed
             if end in legal_moves:
                 self.board[end[0]][end[1]] = piece
                 self.board[start[0]][start[1]] = None
@@ -38,8 +41,7 @@ class BoardManager():
                 self.check_en_passant(piece, start, end)
 
                 self.check_promotion(piece, end)
-                          
-            
+                           
             else:
                 raise ValueError("Not a legal move")
             
