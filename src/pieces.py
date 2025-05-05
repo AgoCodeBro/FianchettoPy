@@ -143,7 +143,7 @@ class Rook(Piece):
     """
 
     def __init__(self, color: Color, has_moved: bool = False) -> None:
-        """Creates an instance of a Rook of the given color
+        """Creates an instance of a bishop of the given color
 
         Args:
             color (Color): The color of the piece
@@ -237,7 +237,7 @@ class Bishop(Piece):
     """
 
     def __init__(self, color: Color, has_moved: bool = False) -> None:
-        """Creates an instance of a Rook of the given color
+        """Creates an instance of a bishiop of the given color
 
         Args:
             color (Color): The color of the piece
@@ -347,3 +347,42 @@ class Bishop(Piece):
             dist += 1
 
         return moves
+    
+class Queen(Rook, Bishop):
+    """Class representing a queen
+
+    Attributes:
+        color (Color): Tracks what color a piece is
+        _symbol (str): Symbol that represents the piece type
+        _value (int): Integer representing point value of the piece
+        has_moved (bool): Flag that says if this piece has moved from its starting square
+    """
+
+    def __init__(self, color: Color, has_moved: bool = False) -> None:
+        """Creates an instance of a queen of the given color
+
+        Args:
+            color (Color): The color of the piece
+            has_moved (bool): Flag that says if this piece has moved from its starting square, Defaults to false
+        """
+        super().__init__(color, has_moved)
+        self._symbol = 'Q'
+        self._value = 9
+
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+        """Returns a list of all the valid moves the piece can make
+
+        Args:
+            position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
+            game (BoardManager): A representation of the board itself.
+
+        Return:
+            list of coordinates where the piece can end up
+        """
+        moves = []
+        moves.extend(Rook.generate_valid_moves(self, position, game))
+        moves.extend(Bishop.generate_valid_moves(self, position, game))
+
+        return moves
+    
+
