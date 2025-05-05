@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src'
 from board_manager import BoardManager
 from pieces import Piece, Rook, Color
 
-class TestPawn(unittest.TestCase):
+class TestRook(unittest.TestCase):
     
     def test_rook_move(self):
         game = BoardManager()

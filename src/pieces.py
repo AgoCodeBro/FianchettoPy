@@ -133,7 +133,7 @@ class Pawn(Piece):
 
   
 class Rook(Piece):
-    """Class representing a pawn
+    """Class representing a rook
 
         Attributes:
             color (Color): Tracks what color a piece is
@@ -226,3 +226,124 @@ class Rook(Piece):
 
         return moves
 
+class Bishop(Piece):
+    """Class representing a bishop
+
+    Attributes:
+        color (Color): Tracks what color a piece is
+        _symbol (str): Symbol that represents the piece type
+        _value (int): Integer representing point value of the piece
+        has_moved (bool): Flag that says if this piece has moved from its starting square
+    """
+
+    def __init__(self, color: Color, has_moved: bool = False) -> None:
+        """Creates an instance of a Rook of the given color
+
+        Args:
+            color (Color): The color of the piece
+            has_moved (bool): Flag that says if this piece has moved from its starting square, Defaults to false
+        """
+        super().__init__(color, has_moved)
+        self._symbol = 'B'
+        self._value = 3
+
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+        """Returns a list of all the valid moves the piece can make
+
+        Args:
+            position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
+            game (BoardManager): A representation of the board itself.
+
+        Return:
+            list of coordinates where the piece can end up
+        """
+        moves = []
+        x = position[0]
+        y = position[1]
+
+        check_up_right = True
+        check_down_right = True
+        check_up_left = True
+        check_down_left = True
+        dist = 1
+
+        while check_up_right or check_down_right or check_up_left or check_down_left:
+            if check_up_right:
+                if (y + dist) > 7:
+                    check_up_right = False
+                    check_up_left = False
+
+                elif (x + dist) > 7:
+                    check_up_right = False
+                    check_down_right = False
+                
+                else:
+                    if game.board[x + dist][y + dist] is None:
+                        moves.append((x + dist, y + dist))
+
+                    else:
+                        if game.board[x + dist][y + dist].color != self.color:
+                            moves.append((x + dist, y + dist))
+
+                        check_up_right = False
+
+            if check_up_left:
+                if (y + dist) > 7:
+                    check_up_right = False
+                    check_up_left = False
+
+                elif (x - dist) < 0:
+                    check_up_left = False
+                    check_down_left = False
+                
+                else:
+                    if game.board[x - dist][y + dist] is None:
+                        moves.append((x - dist, y + dist))
+
+                    else:
+                        if game.board[x - dist][y + dist].color != self.color:
+                            moves.append((x - dist, y + dist))
+                            
+                        check_up_left = False
+
+            if check_down_left:
+                if (y - dist) < 0:
+                    check_down_right = False
+                    check_down_left = False
+
+                elif (x - dist) < 0:
+                    check_up_left = False
+                    check_down_left = False
+                
+                else:
+                    if game.board[x - dist][y - dist] is None:
+                        moves.append((x - dist, y - dist))
+
+                    else:
+                        if game.board[x - dist][y - dist].color != self.color:
+                            moves.append((x - dist, y - dist))
+                            
+                        check_down_left = False
+
+            if check_down_right:
+                if (y - dist) < 0:
+                    check_down_right = False
+                    check_down_left = False
+
+                elif (x + dist) > 7:
+                    check_up_right = False
+                    check_down_right = False
+                
+                else:
+                    if game.board[x + dist][y - dist] is None:
+                        moves.append((x + dist, y - dist))
+
+                    else:
+                        if game.board[x + dist][y - dist].color != self.color:
+                            moves.append((x + dist, y - dist))
+                            
+                        check_down_left = False
+
+            dist += 1
+
+        return moves
