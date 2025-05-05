@@ -19,8 +19,11 @@ class BoardManager():
         self.en_passant_pos = None
 
     def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
+        # Check that starting square is on the board
+        if start[0] < 0 or start[0] > 7 or start[1] < 0 or start[1] > 7:
+            raise ValueError("This piece is off the board")
+        
         piece = self.board[start[0]][start[1]]
-
 
         # Check if a piece was selected
         if piece is not None:

@@ -1,6 +1,11 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from board_manager import BoardManager
+
 class Color(Enum):
     """An enum to for each type of piece"""
     WHITE = 'W'
@@ -77,7 +82,7 @@ class Pawn(Piece):
         self._symbol = 'p'
         self._value = 1
 
-    def generate_valid_moves(self,position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
@@ -92,14 +97,6 @@ class Pawn(Piece):
 
         else:
             move_direction = -1
-
-        # Validate positon is on the board
-        for i in position:
-            if i > 7 or i < 0:
-                raise ValueError("Piece's position is off of the board")
-        
-        if position[1] == 7 or position[1] == 0:
-            raise ValueError("Pawns cant be at the end of the board. Promotion did not occur")
             
         # Check forward movement
         moves = []
@@ -135,3 +132,97 @@ class Pawn(Piece):
         return moves
 
   
+class Rook(Piece):
+    """Class representing a pawn
+
+        Attributes:
+            color (Color): Tracks what color a piece is
+            _symbol (str): Symbol that represents the piece type
+            _value (int): Integer representing point value of the piece
+            has_moved (bool): Flag that says if this piece has moved from its starting square
+    """
+
+    def __init__(self, color: Color, has_moved: bool = False) -> None:
+        """Creates an instance of a Rook of the given color
+
+        Args:
+            color (Color): The color of the piece
+            has_moved (bool): Flag that says if this piece has moved from its starting square, Defaults to false
+        """
+        super().__init__(color, has_moved)
+        self._symbol = 'R'
+        self._value = 5
+
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+        """Returns a list of all the valid moves the piece can make
+
+        Args:
+            position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
+            game (BoardManager): A representation of the board itself.
+
+        Return:
+            list of coordinates where the piece can end up
+        """
+        moves = []
+        x = position[0]
+        y = position[1]
+
+        check_up = True
+        check_down = True
+        check_left = True
+        check_right = True
+        dist = 1
+
+        while check_up or check_down or check_left or check_right:
+            if check_up:
+                if (y + dist) <= 7 and game.board[x][y + dist] is not None:
+                    check_up = False
+                    if game.board[x][y + dist].color != self.color:
+                        moves.append((x, y + dist))
+                
+                elif (y + dist) <= 7 and game.board[x][y + dist] is None:
+                    moves.append((x, y + dist))
+
+                else:
+                    check_up = False
+
+            if check_down:
+                if (y - dist) >= 0 and game.board[x][y - dist] is not None:
+                    check_down = False
+                    if game.board[x][y - dist].color != self.color:
+                        moves.append((x, y - dist))
+                
+                elif (y - dist) >= 0 and game.board[x][y - dist] is None:
+                    moves.append((x, y - dist))
+
+                else:
+                    check_down = False
+
+            if check_right:
+                if (x + dist) <= 7 and game.board[x + dist][y] is not None:
+                    check_right = False
+                    if game.board[x + dist][y].color != self.color:
+                        moves.append((x + dist, y))
+                
+                elif (x + dist) <= 7 and game.board[x + dist][y] is None:
+                    moves.append((x + dist, y))
+
+                else:
+                    check_right = False
+
+            if check_left:
+                if (x - dist) >= 0 and game.board[x - dist][y] is not None:
+                    check_left = False
+                    if game.board[x - dist][y].color != self.color:
+                        moves.append((x + dist, y))
+                
+                elif (x - dist) >= 0 and game.board[x - dist][y] is None:
+                    moves.append((x - dist, y))
+
+                else:
+                    check_left = False
+
+            dist += 1
+
+        return moves
+
