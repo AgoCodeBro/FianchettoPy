@@ -1,4 +1,12 @@
-from pieces import Color, Piece
+from pieces import (Color,   
+                    Piece, 
+                    Pawn, 
+                    Bishop, 
+                    Rook,
+                    King,
+                    Knight,
+                    Queen)
+
 class BoardManager():
     """Represents the board and controls the legal moves
 
@@ -10,7 +18,6 @@ class BoardManager():
         en_passant_pos (tuple[int, int] | None): Holds postion of pawn capturable with en passant or None if there 
             is no such pawn
     """
-
     def __init__(self):
         """Creates and instance of the board managers"""
         self.board = [[None] * 8 for _ in range(8)]
@@ -83,4 +90,62 @@ class BoardManager():
     def check_promotion(self, piece: Piece, end: tuple[int, int]) -> None:
         if type(piece).__name__ == "Pawn" and (end[1] == 0 or end[1] == 1):
             print("this pawn should promote")
+
+    def generate_starting_position(self):
+        # Add Pawns
+        for i in range(8):
+            self.board[i][1] = Pawn(Color.WHITE)
+            self.board[i][6] = Pawn(Color.BLACK)
+
+        # Add Rooks
+        self.board[0][0] = Rook(Color.WHITE)
+        self.board[7][0] = Rook(Color.WHITE)
+        self.board[0][7] = Rook(Color.BLACK)
+        self.board[7][7] = Rook(Color.BLACK)
+
+        # Add Knights
+        self.board[1][0] = Knight(Color.WHITE)
+        self.board[6][0] = Knight(Color.WHITE)
+        self.board[1][7] = Knight(Color.BLACK)
+        self.board[6][7] = Knight(Color.BLACK)
+
+        # Add Bishops 
+        self.board[2][0] = Bishop(Color.WHITE)
+        self.board[5][0] = Bishop(Color.WHITE)
+        self.board[2][7] = Bishop(Color.BLACK)
+        self.board[5][7] = Bishop(Color.BLACK) 
+
+        # Add Queens
+        self.board[3][0] = Queen(Color.WHITE)
+        self.board[3][7] = Queen(Color.BLACK)
+
+        # Add Kings
+        self.board[4][0] = King(Color.WHITE)
+        self.board[4][7] = King(Color.BLACK)
         
+    def printBoard(self):
+        if self.to_move == Color.WHITE:
+            self.print_white_side()
+
+        else:
+            self.print_black_side()
+
+    def print_white_side(self):
+        print()
+        print("________________________")
+        print("  a  b  c  d  e  f  g  h")
+        print("  |  |  |  |  |  |  |  | ")
+        for i in range(8):
+            line = "[ "
+            for j in range(8):
+                if self.board[j][7 - i] is None:
+                    line += "-- "
+                else:
+                    line += f"{self.board[j][7 - i]} "
+
+            print(f"{line}] - {8 - i}")
+
+        print("________________________")
+
+    def print_black_side(self):
+        pass
