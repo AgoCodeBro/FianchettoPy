@@ -32,14 +32,18 @@ class BoardManager():
         
         piece = self.board[start[0]][start[1]]
 
+
         # Check if a piece was selected
         if piece is not None:
             legal_moves = piece.generate_valid_moves(start, self)
 
+            # Check if piece is the correct color
+            if piece.color != self.to_move:
+                raise ValueError("The piece is the wrong color")
+
             # Check if the attempted move is allowed
             if end in legal_moves:
-                self.board[end[0]][end[1]] = piece
-                self.board[start[0]][start[1]] = None
+                self._free_move(start, end)
                 piece.has_moved = True
 
                 if self.en_passant:
@@ -51,12 +55,42 @@ class BoardManager():
                 self.check_en_passant(piece, start, end)
 
                 self.check_promotion(piece, end)
+
+                self._change_turn()
                            
             else:
                 raise ValueError("Not a legal move")
             
         else: 
             raise ValueError("No piece selected")
+        
+    def _change_turn(self):
+        if self.to_move == Color.WHITE:
+            self.to_move = Color.BLACK
+
+        else:
+            self.to_move = Color.WHITE
+        
+    def _free_move(self, start, end):
+        """Moves what ever piece is selected to what ever location is given as long as its on the board
+        
+        Useful for editing positions later on. moving and empty square onto a piece is used
+        to remove a piece off the board
+        
+        Args:
+            start (tuple[int, int]): square the piece is starting at
+            end (tuple[int, int]): square the piece is headed to
+        """
+        # Check that starting square is on the board
+        if start[0] < 0 or start[0] > 7 or start[1] < 0 or start[1] > 7:
+            raise ValueError("This piece is off the board")
+        
+        # Check that end square is on the board
+        if end[0] < 0 or end[0] > 7 or end[1] < 0 or end[1] > 7:
+            raise ValueError("This square is off the board")
+        
+        self.board[end[0]][end[1]] = self.board[start[0]][start[1]]
+        self.board[start[0]][start[1]] = None
         
     def check_en_passant(self, piece: Piece, start: tuple[int, int], end: tuple[int, int]) -> None:
         """Checks if en passant is playable on the board next move and sets self.en_passant, and self.en_passant_pos to the correct values
@@ -132,6 +166,7 @@ class BoardManager():
 
     def print_white_side(self):
         print()
+        print("      White to move     ")
         print("________________________")
         print("  a  b  c  d  e  f  g  h")
         print("  |  |  |  |  |  |  |  | ")
@@ -148,4 +183,19 @@ class BoardManager():
         print("________________________")
 
     def print_black_side(self):
-        pass
+        print()
+        print("      Black to move     ")
+        print("________________________")
+        print("  h  g  f  e  d  c  b  a")
+        print("  |  |  |  |  |  |  |  | ")
+        for i in range(8):
+            line = "[ "
+            for j in range(8):
+                if self.board[7 - j][i] is None:
+                    line += "-- "
+                else:
+                    line += f"{self.board[7 - j][i]} "
+
+            print(f"{line}] - {i + 1}")
+
+        print("________________________")
