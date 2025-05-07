@@ -1,11 +1,6 @@
 import unittest
-import sys
-import os
-# This line makes Python find src/ directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-from board_manager import BoardManager
-from pieces import Queen, Color
+from fianchetto import BoardManager
+from fianchetto.core.pieces import Queen, Color
 
 class TestQueen(unittest.TestCase):
     def test_queen_move(self):
@@ -45,7 +40,7 @@ class TestQueen(unittest.TestCase):
 
     # Helper method for tests
     def _generate_queens(self) -> BoardManager:
-        game = BoardManager()
+        game = BoardManager(True)
         game.board[3][0] = Queen(Color.WHITE)
         game.board[3][7] = Queen(Color.BLACK)
         return game

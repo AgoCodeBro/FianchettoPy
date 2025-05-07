@@ -1,5 +1,5 @@
-from board_manager import BoardManager
-from pieces import Color
+from fianchetto.core.board_manager import BoardManager
+from fianchetto.core.pieces import Color
 
 
 
@@ -9,8 +9,12 @@ def main():
         keep_going = True
 
         while keep_going:
-            game.printBoard()
+            print_board(game)
             alg_move = input("Please enter a move by entering the starting and ending coordinates seprataed by commas (Ex: g1, f3): ")
+
+            if alg_move.lower() == "reset":
+                keep_going = False
+                continue
 
             try:
                 move = alg_to_coord(alg_move)
@@ -31,10 +35,7 @@ def main():
                 continue
 
 
-
-
-    else:
-        return
+    main()
 
 
 def main_menu(game: BoardManager):
@@ -44,13 +45,13 @@ def main_menu(game: BoardManager):
         print()
         print("________________________")
         print("Welcome to FianchettoPy!")
-        ans = input("Would you like to play a local game? Y/N: ")
+        ans = input("Would you like to play a local game? Y/N (type Q to quit): ")
         if ans.lower() == "y":
             return start_game(game)
         
         elif ans.lower() == "n":
             print("")
-            return False
+            return quit()
         
         else:
             keep_going = True
@@ -90,6 +91,50 @@ def alg_to_coord(alg_move: str) -> list[tuple[int, int]]:
                              
     return moves
 
+def print_board(game: BoardManager):
+    print()
+    print("type RESET as your move at any time to head back to the main menu")
+    if game.to_move == Color.WHITE:
+        print_white_side(game)
+
+    else:
+        print_black_side(game)
+
+def print_white_side(game: BoardManager):
+    print()
+    print("      White to move     ")
+    print("________________________")
+    print("  a  b  c  d  e  f  g  h")
+    print("  |  |  |  |  |  |  |  | ")
+    for i in range(8):
+        line = "[ "
+        for j in range(8):
+            if game.board[j][7 - i] is None:
+                line += "-- "
+            else:
+                line += f"{game.board[j][7 - i]} "
+
+        print(f"{line}] - {8 - i}")
+
+    print("________________________")
+
+def print_black_side(game):
+    print()
+    print("      Black to move     ")
+    print("________________________")
+    print("  h  g  f  e  d  c  b  a")
+    print("  |  |  |  |  |  |  |  | ")
+    for i in range(8):
+        line = "[ "
+        for j in range(8):
+            if game.board[7 - j][i] is None:
+                line += "-- "
+            else:
+                line += f"{game.board[7 - j][i]} "
+
+        print(f"{line}] - {i + 1}")
+
+    print("________________________")
 
 
 if __name__ == "__main__":

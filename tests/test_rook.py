@@ -1,16 +1,11 @@
 import unittest
-import sys
-import os
-# This line makes Python find src/ directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-from board_manager import BoardManager
-from pieces import Piece, Rook, Color
+from fianchetto import BoardManager
+from fianchetto.core.pieces import Piece, Rook, Color
 
 class TestRook(unittest.TestCase):
     
     def test_rook_move(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._generate_rooks(game)
 
         game.move((0, 0), (0, 4))
@@ -25,7 +20,7 @@ class TestRook(unittest.TestCase):
             game.move((0, 4), (5,6))
 
     def test_rook_take(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._generate_rooks(game)
 
         game.move((0, 0), (0, 7))
@@ -36,14 +31,14 @@ class TestRook(unittest.TestCase):
         self.assertEqual(game.board[7][7].color, Color.WHITE)
 
     def test_rook_take_self(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._generate_rooks(game)
 
         with self.assertRaises(ValueError):
             game.move((0,0), (7,0))
 
     def test_rook_cant_jump_self(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._generate_rooks(game)
 
         game.move((7,0), (5,0))
@@ -52,7 +47,7 @@ class TestRook(unittest.TestCase):
             game.move((0,0), (7,0))
 
     def test_rook_cant_jump_opp(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._generate_rooks(game)
 
         game.move((7,7), (5,7))

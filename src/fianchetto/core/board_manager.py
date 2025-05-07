@@ -1,4 +1,4 @@
-from pieces import (Color,   
+from .pieces import (Color,   
                     Piece, 
                     Pawn, 
                     Bishop, 
@@ -17,13 +17,15 @@ class BoardManager():
         en_passant (bool): Flag that says if enpassant is playable this turn
         en_passant_pos (tuple[int, int] | None): Holds postion of pawn capturable with en passant or None if there 
             is no such pawn
+        debug (bool): Flag to enter debug mode. Will allow play out of turn while enforcing other rules
     """
-    def __init__(self):
+    def __init__(self, debug: bool=False):
         """Creates and instance of the board managers"""
         self.board = [[None] * 8 for _ in range(8)]
         self.to_move = Color.WHITE
         self.en_passant = False
         self.en_passant_pos = None
+        self.debug = debug
 
     def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
         # Check that starting square is on the board
@@ -38,7 +40,7 @@ class BoardManager():
             legal_moves = piece.generate_valid_moves(start, self)
 
             # Check if piece is the correct color
-            if piece.color != self.to_move:
+            if piece.color != self.to_move and not self.debug:
                 raise ValueError("The piece is the wrong color")
 
             # Check if the attempted move is allowed
@@ -157,45 +159,3 @@ class BoardManager():
         self.board[4][0] = King(Color.WHITE)
         self.board[4][7] = King(Color.BLACK)
         
-    def printBoard(self):
-        if self.to_move == Color.WHITE:
-            self.print_white_side()
-
-        else:
-            self.print_black_side()
-
-    def print_white_side(self):
-        print()
-        print("      White to move     ")
-        print("________________________")
-        print("  a  b  c  d  e  f  g  h")
-        print("  |  |  |  |  |  |  |  | ")
-        for i in range(8):
-            line = "[ "
-            for j in range(8):
-                if self.board[j][7 - i] is None:
-                    line += "-- "
-                else:
-                    line += f"{self.board[j][7 - i]} "
-
-            print(f"{line}] - {8 - i}")
-
-        print("________________________")
-
-    def print_black_side(self):
-        print()
-        print("      Black to move     ")
-        print("________________________")
-        print("  h  g  f  e  d  c  b  a")
-        print("  |  |  |  |  |  |  |  | ")
-        for i in range(8):
-            line = "[ "
-            for j in range(8):
-                if self.board[7 - j][i] is None:
-                    line += "-- "
-                else:
-                    line += f"{self.board[7 - j][i]} "
-
-            print(f"{line}] - {i + 1}")
-
-        print("________________________")

@@ -1,11 +1,6 @@
 import unittest
-import sys
-import os
-# This line makes Python find src/ directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-from board_manager import BoardManager
-from pieces import King, Color
+from fianchetto import BoardManager
+from fianchetto.core.pieces import King, Color
 
 class TestKing(unittest.TestCase):
     def test_king_move(self):
@@ -21,7 +16,7 @@ class TestKing(unittest.TestCase):
 
     # Helper method for tests
     def _generate_kings(self) -> BoardManager:
-        game = BoardManager()
+        game = BoardManager(True)
         game.board[4][0] = King(Color.WHITE)
         game.board[4][7] = King(Color.BLACK)
         return game

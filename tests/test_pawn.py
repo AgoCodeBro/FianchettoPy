@@ -1,25 +1,20 @@
 import unittest
-import sys
-import os
-# This line makes Python find src/ directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
-from board_manager import BoardManager
-from pieces import Piece, Pawn, Color
+from fianchetto import BoardManager
+from fianchetto.core.pieces import Piece, Pawn, Color
 
 class TestPawn(unittest.TestCase):
     def test_value(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         self.assertEqual(game.board[0][1].value, 1)
 
     def test_symbol(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         self.assertEqual(game.board[0][1].symbol, 'p')
 
     def test_move_pawn_one_square(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,2))
         game.move((6,6), (6,5))
@@ -37,7 +32,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(type(end_square).__name__, "Pawn")
 
     def test_move_two_squares(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,3))
         game.move((6,6), (6,4))
@@ -55,7 +50,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(type(end_square).__name__, "Pawn")
 
     def test_cant_move_two_after_first_move(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,2))
         game.move((6,6), (6,5))
@@ -67,7 +62,7 @@ class TestPawn(unittest.TestCase):
             game.move((6,5), (6,3))
 
     def test_no_jumping(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,3))
         game.move((0, 3), (0, 4))
@@ -84,7 +79,7 @@ class TestPawn(unittest.TestCase):
             game.move((0,6), (0,4))
 
     def test_no_fowrard_take(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((4,1), (4,3))
         game.move((4,6), (4,4))
@@ -96,7 +91,7 @@ class TestPawn(unittest.TestCase):
             game.move((4,4), (4,3))
 
     def test_no_forwad_2_square_take(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((4,1), (4,3))
         game.move((4,3), (4,4))
@@ -110,7 +105,7 @@ class TestPawn(unittest.TestCase):
             game.move((3,1), (3,3))
 
     def test_take(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((4,1), (4,3))
         game.move((3,6), (3,4))
@@ -121,7 +116,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(game.board[4][3], None)
 
     def test_no_take_air(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,2))
         game.move((6,6), (6,5))
@@ -133,7 +128,7 @@ class TestPawn(unittest.TestCase):
             game.move((6,5), (7,4))
 
     def test_no_backwards_move(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,3))
         game.move((6,6), (6,4))
@@ -144,8 +139,8 @@ class TestPawn(unittest.TestCase):
         with self.assertRaises(ValueError):
             game.move((6,4), (6,6))
 
-    def test_en_passant_to_the_white(self):
-        game = BoardManager()
+    def test_en_passant_white(self):
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,1), (0,3))
         game.move((0,3), (0,4))
@@ -175,7 +170,7 @@ class TestPawn(unittest.TestCase):
         self.assertEqual(game.en_passant_pos, None)
 
     def en_passant_black(self):
-        game = BoardManager()
+        game = BoardManager(True)
         self._genereate_pawns(game.board)
         game.move((0,6), (0,4))
         game.move((0,4), (0,3))
