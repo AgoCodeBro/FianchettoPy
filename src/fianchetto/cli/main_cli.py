@@ -45,7 +45,7 @@ def main_menu(game: BoardManager):
         print()
         print("________________________")
         print("Welcome to FianchettoPy!")
-        ans = input("Would you like to play a local game? Y/N (type Q to quit): ")
+        ans = input("Would you like to play a local game? Y/N: ")
         if ans.lower() == "y":
             return start_game(game)
         
