@@ -26,6 +26,12 @@ venv\Scripts\activate
 pip install git+https://github.com/AgoCodeBro/FianchettoPy.git
 ```
 
+### Install a specific version
+
+```bash
+pip install git+https://github.com/AgoCodeBro/FianchettoPy.git@v0.3.0
+```
+
 ## Usage
 
 ### After installation, run the game with:
