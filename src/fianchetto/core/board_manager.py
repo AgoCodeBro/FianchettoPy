@@ -18,6 +18,9 @@ class BoardManager():
         en_passant_pos (tuple[int, int] | None): Holds postion of pawn capturable with en passant or None if there 
             is no such pawn
         debug (bool): Flag to enter debug mode. Will allow play out of turn while enforcing other rules
+        white_king (tuple[int, int]): Location of white's king
+        black_king (tuple[int, int]): Location of black's king
+        check (Color | None): Set to the color of the side in check or to None other wise
     """
     def __init__(self, debug: bool=False):
         """Creates and instance of the board managers
@@ -30,6 +33,9 @@ class BoardManager():
         self.en_passant = False
         self.en_passant_pos = None
         self.debug = debug
+        self.white_king_pos = (4,0)
+        self.black_king_pos = (4,7)
+        self.check = None
 
     def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
         """Makes a ches move on the board. If the move is not valid it will throw an error
@@ -63,6 +69,29 @@ class BoardManager():
                     if type(piece).__name__ == "Pawn":
                         if end == (self.en_passant_pos[0], self.en_passant_pos[1] + 1) or end == (self.en_passant_pos[0], self.en_passant_pos[1] - 1):
                             self.board[self.en_passant_pos[0]][self.en_passant_pos[1]] = None
+
+                # If the king moved update its position
+                if type(piece).__name__ == "King":
+                    if piece.color == Color.WHITE:
+                        self.white_king_pos = end
+
+                    else:
+                        self.black_king_pos = end
+
+                # See if the player put their opponent in check.
+                if piece.color == Color.WHITE:
+                    opp_king = self.board[self.black_king_pos[0]][self.black_king_pos[1]]
+
+                else:
+                    opp_king = self.board[self.white_king_pos[0]][self.white_king_pos[1]]
+
+                if opp_king is not None and opp_king.in_check(self):
+                    # King might be none durring debuging
+                    self.check = opp_king.color
+
+                else:
+                    self.check  = None
+
 
                 self._check_en_passant(piece, start, end)
 
