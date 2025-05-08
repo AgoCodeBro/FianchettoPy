@@ -70,6 +70,14 @@ class Piece(ABC):
         king = game.board[king_pos[0]][king_pos[1]]
 
         for move in moves:
+            #If its a king move, update the kings position
+            if type(piece).__name__ == "King":
+                if piece.color == Color.WHITE:
+                    game.white_king_pos = move
+            
+                else:
+                    game.black_king_pos = move
+
             # Create a temp to hold what was on the destination square
             temp = game.board[move[0]][move[1]]
             game._free_move(position, move)
@@ -77,9 +85,18 @@ class Piece(ABC):
             if king is None or not king.in_check(game):
                 # King might be none durring debuging
                 result.append(move)
+
+            # Reset king position
+            if type(piece).__name__ == "King":
+                if piece.color == Color.WHITE:
+                    game.white_king_pos = (pos_x, pos_y)
+            
+                else:
+                    game.black_king_pos = (pos_x, pos_y)
             
             game._free_move(move, position)
             game.board[move[0]][move[1]] = temp
+            
         
         return result
 
@@ -589,7 +606,7 @@ class King(Piece):
             return True
         
         # Queen and Bishiop checks
-        bishop = Rook(self.color)
+        bishop = Bishop(self.color)
         queen = Queen(self.color)
         vision = bishop.generate_valid_moves((x, y), game, True)
         if self._check_vision(vision, game, [type(queen), type(bishop)]):
