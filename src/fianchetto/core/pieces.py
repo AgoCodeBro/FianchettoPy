@@ -214,7 +214,7 @@ class Rook(Piece):
                 if (x - dist) >= 0 and game.board[x - dist][y] is not None:
                     check_left = False
                     if game.board[x - dist][y].color != self.color:
-                        moves.append((x + dist, y))
+                        moves.append((x - dist, y))
                 
                 elif (x - dist) >= 0 and game.board[x - dist][y] is None:
                     moves.append((x - dist, y))
