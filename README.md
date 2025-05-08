@@ -66,7 +66,7 @@ At anytime during a game, you can input `RESET` and head back to the startting m
 
 ## Status
 
-Project is at v0.3.2
+Project is at v0.5.0
 
 ## Roadmap
 
@@ -76,10 +76,10 @@ Project is at v0.3.2
 - [x] Board Manager
 - [ ] Full Rules
     - [ ] Castling
-    - [ ] Promotion
-    - [ ] Checks
+    - [x] Promotion
+    - [x] Checks
     - [ ] Checkmate
-    - [ ] Pins
+    - [x] Pins
     - [ ] Stalemate
 - [ ] GUI
 - [ ] Basic Bot
