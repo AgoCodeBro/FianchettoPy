@@ -342,7 +342,7 @@ class Bishop(Piece):
                         if game.board[x + dist][y - dist].color != self.color:
                             moves.append((x + dist, y - dist))
                             
-                        check_down_left = False
+                        check_down_right = False
 
             dist += 1
 
