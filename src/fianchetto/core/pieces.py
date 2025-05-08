@@ -34,17 +34,71 @@ class Piece(ABC):
         self.has_moved = has_moved
 
     @abstractmethod
-    def generate_valid_moves(self, position: tuple[int,int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager', checks: bool = False) -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
             position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
             game (BoardManager): A representation of the board itself.
+            checks (bool): Is true if it is being used to look for checks and not make a move
 
         Return:
             list of coordinates where the piece can end up
         """
         pass
+
+    def _remove_checks(self, position: tuple[int, int], moves: list[tuple[int, int]], game: 'BoardManager') -> list[tuple[int, int]]:
+        """Helper function to generate valid moves that removes all moves that put yourself in check
+
+        Args:
+            position (tuple[int, int]): Current position of piece being moved
+            moves (list[tuple[int, int]]): List of posible moves the piece can make
+            game (BoardManager): Representation of the board itself
+        """
+        pos_x = position[0]
+        pos_y = position[1]
+        piece = game.board[pos_x][pos_y]
+        result = []
+
+        # Select the correct king
+        if piece.color == Color.WHITE:
+            king_pos = game.white_king_pos
+    
+        else:
+            king_pos = game.black_king_pos
+
+        king = game.board[king_pos[0]][king_pos[1]]
+
+        for move in moves:
+            #If its a king move, update the kings position
+            if type(piece).__name__ == "King":
+                if piece.color == Color.WHITE:
+                    game.white_king_pos = move
+            
+                else:
+                    game.black_king_pos = move
+
+            # Create a temp to hold what was on the destination square
+            temp = game.board[move[0]][move[1]]
+            game._free_move(position, move)
+
+            if king is None or not king.in_check(game):
+                # King might be none durring debuging
+                result.append(move)
+
+            # Reset king position
+            if type(piece).__name__ == "King":
+                if piece.color == Color.WHITE:
+                    game.white_king_pos = (pos_x, pos_y)
+            
+                else:
+                    game.black_king_pos = (pos_x, pos_y)
+            
+            game._free_move(move, position)
+            game.board[move[0]][move[1]] = temp
+            
+        
+        return result
 
     @property
     def symbol(self) -> str:
@@ -82,12 +136,13 @@ class Pawn(Piece):
         self._symbol = 'p'
         self._value = 1
 
-    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager', checks: bool = False) -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
             position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
             game (BoardManager): A representation of the board itself.
+            checks (bool): Is true if it is being used to look for checks and not make a move
 
         Return:
             list of coordinates where the piece can end up
@@ -131,7 +186,11 @@ class Pawn(Piece):
                 if game.en_passant_pos[1] == position[1]:
                     moves.append((game.en_passant_pos[0], game.en_passant_pos[1] + move_direction))
 
-        return moves
+                # If we are looking for checks, dont try to look for checks again
+        if checks:
+            return moves
+
+        return self._remove_checks(position, moves, game)
 
   
 class Rook(Piece):
@@ -155,12 +214,13 @@ class Rook(Piece):
         self._symbol = 'R'
         self._value = 5
 
-    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager', checks: bool = False) -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
             position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
             game (BoardManager): A representation of the board itself.
+            checks (bool): Is true if it is being used to look for checks and not make a move
 
         Return:
             list of coordinates where the piece can end up
@@ -226,7 +286,11 @@ class Rook(Piece):
 
             dist += 1
 
-        return moves
+        # If we are looking for checks, dont try to look for checks again
+        if checks:
+            return moves
+        
+        return self._remove_checks(position, moves, game)
 
 class Bishop(Piece):
     """Class representing a bishop
@@ -249,12 +313,13 @@ class Bishop(Piece):
         self._symbol = 'B'
         self._value = 3
 
-    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager', checks: bool = False) -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
             position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
             game (BoardManager): A representation of the board itself.
+            checks (bool): Is true if it is being used to look for checks and not make a move
 
         Return:
             list of coordinates where the piece can end up
@@ -348,7 +413,11 @@ class Bishop(Piece):
 
             dist += 1
 
-        return moves
+        # If we are looking for checks, dont try to look for checks again
+        if checks:
+            return moves
+        
+        return self._remove_checks(position, moves, game)
     
 class Queen(Rook, Bishop):
     """Class representing a queen
@@ -371,21 +440,26 @@ class Queen(Rook, Bishop):
         self._symbol = 'Q'
         self._value = 9
 
-    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager', checks: bool = False) -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
             position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
             game (BoardManager): A representation of the board itself.
+            checks (bool): Is true if it is being used to look for checks and not make a move
 
         Return:
             list of coordinates where the piece can end up
         """
         moves = []
-        moves.extend(Rook.generate_valid_moves(self, position, game))
-        moves.extend(Bishop.generate_valid_moves(self, position, game))
+        moves.extend(Rook.generate_valid_moves(self, position, game, checks))
+        moves.extend(Bishop.generate_valid_moves(self, position, game, checks))
 
-        return moves
+        # If we are looking for checks, dont try to look for checks again
+        if checks:
+            return moves
+        
+        return self._remove_checks(position, moves, game)
     
 
 class Knight(Piece):
@@ -409,12 +483,13 @@ class Knight(Piece):
         self._symbol = 'N'
         self._value = 3
 
-    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager') -> list[tuple[int, int]]:
+    def generate_valid_moves(self, position: tuple[int, int], game: 'BoardManager', checks:bool = False) -> list[tuple[int, int]]:
         """Returns a list of all the valid moves the piece can make
 
         Args:
             position (tuple[int, int]): A tuple contating 2 ints that give where on the board this piece is.
             game (BoardManager): A representation of the board itself.
+            checks (bool): Is true if it is being used to look for checks and not make a move
 
         Return:
             list of coordinates where the piece can end up
@@ -423,17 +498,21 @@ class Knight(Piece):
         choices = [(1, 2), (1 ,-2), (2, 1), (2, -1), (-1, 2), (-1 ,-2), (-2, 1), (-2, -1)]
 
         for choice in choices:
-            if self.is_on_board(position, choice):
+            if self._is_on_board(position, choice):
                 if game.board[position[0] + choice[0]][position[1] + choice[1]] == None:
                     moves.append((position[0] + choice[0], position[1] + choice[1]))
 
                 elif game.board[position[0] + choice[0]][position[1] + choice[1]].color != self.color:
                     moves.append((position[0] + choice[0], position[1] + choice[1]))
 
-        return moves
+        # If we are looking for checks, dont try to look for checks again
+        if checks:
+            return moves
+        
+        return self._remove_checks(position, moves, game)
 
 
-    def is_on_board(self, position: tuple[int, int], choice: tuple[int, int]) -> bool:
+    def _is_on_board(self, position: tuple[int, int], choice: tuple[int, int]) -> bool:
         """Checks if moving from the current position to the choice ends up on the board
 
         Args:
@@ -494,4 +573,62 @@ class King(Piece):
                     if game.board[x + i][y + j] is None or game.board[x + i][y + j].color != self.color:
                         moves.append((x + i, y + j))
 
-        return moves
+        return self._remove_checks(position, moves, game)
+    
+    def in_check(self, game: 'BoardManager') -> bool:
+        """Returns if true if in check and false otherwise"""    
+        if self.color == Color.WHITE:
+            x = game.white_king_pos[0]
+            y = game.white_king_pos[1]
+        
+        
+        else:
+            x = game.black_king_pos[0]
+            y = game.black_king_pos[1]
+
+        # Pawn checks
+        pawn = Pawn(self.color)
+        vision = pawn.generate_valid_moves((x, y), game, True)
+        if self._check_vision(vision, game, [type(pawn)]):
+            return True
+                
+        # Knight checks
+        knight = Knight(self.color)
+        vision = knight.generate_valid_moves((x, y), game, True)
+        if self._check_vision(vision, game, [type(knight)]):
+            return True
+        
+        # Queen and Rook checks
+        rook = Rook(self.color)
+        queen = Queen(self.color)
+        vision = rook.generate_valid_moves((x, y), game, True)
+        if self._check_vision(vision, game, [type(queen), type(rook)]):
+            return True
+        
+        # Queen and Bishiop checks
+        bishop = Bishop(self.color)
+        queen = Queen(self.color)
+        vision = bishop.generate_valid_moves((x, y), game, True)
+        if self._check_vision(vision, game, [type(queen), type(bishop)]):
+            return True
+        
+        return False
+
+    def _check_vision(self, vision: list[tuple[int, int]], game: 'BoardManager', piece_names: list[str]) -> bool:
+        """Checks squares in vision to see if an opposing piece is checking the king
+
+        Args:
+            vision (list[tuple[int, int]]): A list of coordinates containing square that have line of sight on the king
+            game (BoardManager): Representation of the board
+            piece_names (list[str]): A list of the names of the pieces that could check the king from these squares
+
+        Return:
+            Returns true if any of the squares in vision contains an enemy piece whos name is in piece_names and false otherwise
+        """
+        for square in vision:
+            potential_threat = game.board[square[0]][square[1]]
+            if potential_threat is not None and potential_threat.color != self.color:
+                if type(potential_threat) in piece_names:
+                    return True
+                
+        return False
