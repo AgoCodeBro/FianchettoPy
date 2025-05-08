@@ -20,7 +20,11 @@ class BoardManager():
         debug (bool): Flag to enter debug mode. Will allow play out of turn while enforcing other rules
     """
     def __init__(self, debug: bool=False):
-        """Creates and instance of the board managers"""
+        """Creates and instance of the board managers
+
+        Args:
+            debug (bool): Flag that allows the board to not enforce certain move rules for debugging
+        """
         self.board = [[None] * 8 for _ in range(8)]
         self.to_move = Color.WHITE
         self.en_passant = False
@@ -28,6 +32,12 @@ class BoardManager():
         self.debug = debug
 
     def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
+        """Makes a ches move on the board. If the move is not valid it will throw an error
+
+        Args:
+            start (tuple[int, int]): The coordinates of the square that the piece to be moved is on
+            end (tuple[int, int]): The coordinates of the square that the piece will end up on
+        """
         # Check that starting square is on the board
         if start[0] < 0 or start[0] > 7 or start[1] < 0 or start[1] > 7:
             raise ValueError("This piece is off the board")
@@ -54,9 +64,9 @@ class BoardManager():
                         if end == (self.en_passant_pos[0], self.en_passant_pos[1] + 1) or end == (self.en_passant_pos[0], self.en_passant_pos[1] - 1):
                             self.board[self.en_passant_pos[0]][self.en_passant_pos[1]] = None
 
-                self.check_en_passant(piece, start, end)
+                self._check_en_passant(piece, start, end)
 
-                self.check_promotion(piece, end)
+                self._check_promotion(piece, end)
 
                 self._change_turn()
                            
@@ -67,6 +77,7 @@ class BoardManager():
             raise ValueError("No piece selected")
         
     def _change_turn(self):
+        """Flips whos turn it is"""
         if self.to_move == Color.WHITE:
             self.to_move = Color.BLACK
 
@@ -94,7 +105,7 @@ class BoardManager():
         self.board[end[0]][end[1]] = self.board[start[0]][start[1]]
         self.board[start[0]][start[1]] = None
         
-    def check_en_passant(self, piece: Piece, start: tuple[int, int], end: tuple[int, int]) -> None:
+    def _check_en_passant(self, piece: Piece, start: tuple[int, int], end: tuple[int, int]) -> None:
         """Checks if en passant is playable on the board next move and sets self.en_passant, and self.en_passant_pos to the correct values
 
         Args:
@@ -123,11 +134,51 @@ class BoardManager():
         self.en_passant = False
         self.en_passant_pos = None
 
-    def check_promotion(self, piece: Piece, end: tuple[int, int]) -> None:
-        if type(piece).__name__ == "Pawn" and (end[1] == 0 or end[1] == 1):
-            print("this pawn should promote")
+    def _check_promotion(self, piece: Piece, end: tuple[int, int]) -> None:
+        """Checks if a pawn has reached the end of the board"""
+        if type(piece).__name__ == "Pawn" and (end[1] == 0 or end[1] == 7):
+            self._promote(end)
 
+    def _promote(self, square: tuple[int, int]) -> None:
+        """Promotes a pawn to a piece of the users choice
+        
+        Args:
+            square (tuple[int, int]): The coordinates of the square where the pawn promoted
+        """
+        keep_going = True
+        x = square[0]
+        y = square[1]
+        color = self.board[x][y].color
+        choice_to_piece = {1 : Queen,
+                           2 : Rook,
+                           3 : Bishop,
+                           4 : Knight}
+
+        while keep_going:
+            print("Please select what piece to turn the pawn into by typing the corrosponding number")
+            ans_str = input("1) Queen\n2) Rook\n3) Bishop\n4) Knight\n")
+
+            try:
+                ans = int(ans_str)
+                if ans > 4 or ans < 1:
+                    raise ValueError("Number out of range of options")
+
+            except:
+                print("Please select a valid option")
+                continue
+
+            try:
+                self.board[x][y] = choice_to_piece[ans](color)
+
+            except Exception as e:
+                # All data should have been validated by this point
+                raise e
+            
+            else:
+                keep_going = False
+                
     def generate_starting_position(self):
+        """Adds all the pieces in their starting positions"""
         # Add Pawns
         for i in range(8):
             self.board[i][1] = Pawn(Color.WHITE)

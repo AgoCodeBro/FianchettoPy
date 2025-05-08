@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from board_manager import BoardManager
+    from fianchetto import BoardManager
 
 class Color(Enum):
     """An enum to for each type of piece"""
@@ -105,10 +105,12 @@ class Pawn(Piece):
         if next_square is None:
             moves.append((position[0], position[1] + move_direction))
 
-            next_square = game.board[position[0]][position[1] + (move_direction * 2)]
+            if not self.has_moved:
 
-            if next_square is None and not self.has_moved:
-                moves.append((position[0], position[1] + (move_direction * 2)))
+                next_square = game.board[position[0]][position[1] + (move_direction * 2)]
+
+                if next_square is None:
+                    moves.append((position[0], position[1] + (move_direction * 2)))
 
         # Check takes
         if position[0] + 1  <= 7:
