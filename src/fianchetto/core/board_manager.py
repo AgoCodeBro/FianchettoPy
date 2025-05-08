@@ -64,6 +64,14 @@ class BoardManager():
                 self._free_move(start, end)
                 piece.has_moved = True
 
+                # Check if a player just castled and finish catselting
+                if type(piece).__name__ == "King" and (start[0] - end[0] > 1 or start[0] - end[0] < -1):
+                    if end[0] == 6:
+                        self._free_move((7, end[1]), (5, end[1]))
+
+                    elif end[0] == 2:
+                        self._free_move((0, end[1]), (3, end[1]))
+
                 if self.en_passant:
                     # Check if En Passant was just played, if it was, remove the pawn
                     if type(piece).__name__ == "Pawn":
