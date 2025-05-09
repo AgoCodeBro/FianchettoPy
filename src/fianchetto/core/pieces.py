@@ -573,7 +573,59 @@ class King(Piece):
                     if game.board[x + i][y + j] is None or game.board[x + i][y + j].color != self.color:
                         moves.append((x + i, y + j))
 
+        moves.extend(self.castling(game))
+
         return self._remove_checks(position, moves, game)
+    
+    def castling(self, game: 'BoardManager') -> list[tuple[int, int]]:
+        moves = []
+        # Ensure king is not in check and hasnt moved
+        if self.has_moved or self.in_check(game):
+            return moves
+
+        # Select correct side of the board
+        if self.color == Color.WHITE:
+            pos = game.white_king_pos
+            y = 0
+
+        else:
+            pos = game.black_king_pos
+            y = 7
+
+        # Check kingside rook
+        if game.board[7][y] is not None and not game.board[7][y].has_moved:
+            # Check path is clear
+            is_clear = True
+            for i in range(5,7):
+                if game.board[i][y] is not None:
+                    is_clear = False
+                    break
+            
+            if is_clear:
+                # Check if crossing check
+                path = self._remove_checks(pos,[(5, y)], game)
+
+                if len(path) == 1:
+                    moves.append((6, y))
+
+        # Check queenside rook
+        if game.board[0][y] is not None and not game.board[0][y].has_moved:
+            # Check path is clear
+            is_clear = True
+            for i in range(1,4):
+                if game.board[i][y] is not None:
+                    is_clear = False
+                    break
+            
+            if is_clear:
+                # Check if crossing check
+                path = self._remove_checks(pos,[(3, y)], game)
+
+                if len(path) == 1:
+                    moves.append((2, y))
+
+        return moves
+
     
     def in_check(self, game: 'BoardManager') -> bool:
         """Returns if true if in check and false otherwise"""    
