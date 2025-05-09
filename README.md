@@ -66,7 +66,7 @@ At anytime during a game, you can input `RESET` and head back to the startting m
 
 ## Status
 
-Project is at v0.3.2
+Project is at v0.5.0
 
 ## Roadmap
 
