@@ -76,10 +76,10 @@ Project is at v0.3.2
 - [x] Board Manager
 - [ ] Full Rules
     - [ ] Castling
-    - [ ] Promotion
-    - [ ] Checks
+    - [x] Promotion
+    - [x] Checks
     - [ ] Checkmate
-    - [ ] Pins
+    - [x] Pins
     - [ ] Stalemate
 - [ ] GUI
 - [ ] Basic Bot
