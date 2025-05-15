@@ -22,6 +22,28 @@ def main(mode):
         keep_going = True
 
         while keep_going:
+            if game.mate is not None:
+                if game.mate == 1:
+                    print()
+                    print()
+                    print("White Wins!")
+
+                elif game.mate == 0:
+                    print()
+                    print()
+                    print("Black Wins!")
+
+                elif game.mate == 0:
+                    print()
+                    print()
+                    print("It's a Draw!")
+
+                else:
+                    raise Exception()
+                
+                quit()
+
+                
             print_board(game)
             alg_move = input("Please enter a move by entering the starting and ending coordinates seprataed by commas (Ex: g1, f3): ")
 
@@ -116,6 +138,8 @@ def print_board_text(game: BoardManager):
 def print_white_side_text(game: BoardManager):
     print()
     print("      White to move     ")
+    if game.check is not None:
+        print("         Check!         ")
     print("________________________")
     for i in range(8):
         line = "[ "
@@ -135,6 +159,8 @@ def print_white_side_text(game: BoardManager):
 def print_black_side_text(game):
     print()
     print("      Black to move     ")
+    if game.check is not None:
+        print("         Check!         ")
     print("________________________")
     for i in range(8):
         line = "[ "
@@ -171,6 +197,8 @@ def print_white_side_dark(game: BoardManager):
 
     print()
     print("      White to move     ")
+    if game.check is not None:
+        print("         Check!         ")
     print(" _________________________")
     for i in range(8):
         line = "[ "
@@ -206,6 +234,8 @@ def print_black_side_dark(game):
 
     print()
     print("      Black to move     ")
+    if game.check is not None:
+        print("         Check!         ")
     print("________________________")
     for i in range(8):
         line = "[ "
@@ -251,6 +281,8 @@ def print_white_side_light(game: BoardManager):
 
     print()
     print("      White to move     ")
+    if game.check is not None:
+        print("         Check!         ")
     print("________________________")
     for i in range(8):
         line = "[ "
@@ -285,6 +317,8 @@ def print_black_side_light(game):
 
     print()
     print("      Black to move     ")
+    if game.check is not None:
+        print("         Check!         ")
     print("________________________")
     for i in range(8):
         line = "[ "

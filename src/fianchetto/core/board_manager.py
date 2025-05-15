@@ -21,6 +21,7 @@ class BoardManager():
         white_king (tuple[int, int]): Location of white's king
         black_king (tuple[int, int]): Location of black's king
         check (Color | None): Set to the color of the side in check or to None other wise
+        mate (int | None): set to 1 if white won, -1 if black won, 0 if a stale mate, and None if there are still moves
     """
     def __init__(self, debug: bool=False):
         """Creates and instance of the board managers
@@ -36,9 +37,10 @@ class BoardManager():
         self.white_king_pos = (4,0)
         self.black_king_pos = (4,7)
         self.check = None
+        self.mate = None
 
     def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
-        """Makes a ches move on the board. If the move is not valid it will throw an error
+        """Makes a chess move on the board. If the move is not valid it will throw an error
 
         Args:
             start (tuple[int, int]): The coordinates of the square that the piece to be moved is on
@@ -105,6 +107,8 @@ class BoardManager():
 
                 self._check_promotion(piece, end)
 
+                self._check_for_mates()
+
                 self._change_turn()
                            
             else:
@@ -112,6 +116,28 @@ class BoardManager():
             
         else: 
             raise ValueError("No piece selected")
+
+    def _check_for_mates(self) -> None:
+        """Checks to see if there is either checkmate or stalemate on the board and sets the mate attribute accordingly"""
+        for i in range(8):
+            for j in range(8):
+                square = self.board[i][j]
+                if square is not None and len(square.generate_valid_moves((i, j), self)) != 0:
+                    if square.color != self.to_move:
+                        return
+                
+        if self.check is None:
+            self.mate = 0
+        
+        elif self.check == Color.WHITE:
+            self.mate = -1
+
+        elif self.check == Color.BLACK:
+            self.mate = 1
+
+        else:
+            raise Exception("Something went wrong")
+            
         
     def _change_turn(self):
         """Flips whos turn it is"""
