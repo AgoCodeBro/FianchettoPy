@@ -1,9 +1,22 @@
 from fianchetto.core.board_manager import BoardManager
-from fianchetto.core.pieces import Color
+from fianchetto.core.pieces import (Color,
+                                    Pawn,
+                                    Rook,
+                                    Knight,
+                                    Bishop,
+                                    Queen,
+                                    King)
 
 
 
-def main():
+def main(mode):
+    print_board_modes = {0 : print_board_dark,
+                         1 : print_board_light,
+                         2 : print_board_text,
+                         }
+    
+    print_board = print_board_modes[mode]
+    
     game = BoardManager()
     if main_menu(game):
         keep_going = True
@@ -35,7 +48,7 @@ def main():
                 continue
 
 
-    main()
+    main(mode)
 
 
 def main_menu(game: BoardManager):
@@ -91,21 +104,19 @@ def alg_to_coord(alg_move: str) -> list[tuple[int, int]]:
                              
     return moves
 
-def print_board(game: BoardManager):
+def print_board_text(game: BoardManager):
     print()
     print("type RESET as your move at any time to head back to the main menu")
     if game.to_move == Color.WHITE:
-        print_white_side(game)
+        print_white_side_text(game)
 
     else:
-        print_black_side(game)
+        print_black_side_text(game)
 
-def print_white_side(game: BoardManager):
+def print_white_side_text(game: BoardManager):
     print()
     print("      White to move     ")
     print("________________________")
-    print("  a  b  c  d  e  f  g  h")
-    print("  |  |  |  |  |  |  |  | ")
     for i in range(8):
         line = "[ "
         for j in range(8):
@@ -115,15 +126,16 @@ def print_white_side(game: BoardManager):
                 line += f"{game.board[j][7 - i]} "
 
         print(f"{line}] - {8 - i}")
+    
+    print("  |  |  |  |  |  |  |  | ")
+    print("  a  b  c  d  e  f  g  h")
 
     print("________________________")
 
-def print_black_side(game):
+def print_black_side_text(game):
     print()
     print("      Black to move     ")
     print("________________________")
-    print("  h  g  f  e  d  c  b  a")
-    print("  |  |  |  |  |  |  |  | ")
     for i in range(8):
         line = "[ "
         for j in range(8):
@@ -134,7 +146,169 @@ def print_black_side(game):
 
         print(f"{line}] - {i + 1}")
 
+    print("  |  |  |  |  |  |  |  | ")
+    print("  h  g  f  e  d  c  b  a")
+
     print("________________________")
+
+def print_board_dark(game):
+    print()
+    print("type RESET as your move at any time to head back to the main menu")
+    if game.to_move == Color.WHITE:
+        print_white_side_dark(game)
+
+    else:
+        print_black_side_dark(game)
+
+def print_white_side_dark(game: BoardManager):
+    pieces = {"Pawn" : ["♟ ", "♙ "],
+              "Rook" : ["♜ ", "♖ "],
+              "Knight" :["♞ ", "♘ "],
+              "Bishop" : ["♝ ", "♗ "],
+              "Queen" : ["♛ ", "♕ "],
+              "King" : ["♚ ", "♔ "],
+              }
+
+    print()
+    print("      White to move     ")
+    print(" _________________________")
+    for i in range(8):
+        line = "[ "
+        for j in range(8):
+            if game.board[j][7 - i] is None:
+                line += "-- "
+
+            else:
+                piece = game.board[j][7 - i]
+                if piece.color == Color.WHITE:
+                    print_color = 0
+
+                else:
+                    print_color = 1
+                piece_name = type(piece).__name__
+                line += f"{pieces[piece_name][print_color]} "
+
+        print(f"{line}] - {8 - i}")
+    
+    print("  |  |  |  |  |  |  |  |")
+    print("  a  b  c  d  e  f  g  h")
+
+    print(" _________________________")
+
+def print_black_side_dark(game):
+    pieces = {"Pawn" : ["♟ ", "♙ "],
+              "Rook" : ["♜ ", "♖ "],
+              "Knight" :["♞ ", "♘ "],
+              "Bishop" : ["♝ ", "♗ "],
+              "Queen" : ["♛ ", "♕ "],
+              "King" : ["♚ ", "♔ "],
+              }
+
+    print()
+    print("      Black to move     ")
+    print("________________________")
+    for i in range(8):
+        line = "[ "
+        for j in range(8):
+            if game.board[7 - j][i] is None:
+                line += "-- "
+            else:
+                piece = game.board[7 - j][i]
+                if piece.color == Color.WHITE:
+                    print_color = 0
+
+                else:
+                    print_color = 1
+
+                piece_name = type(piece).__name__
+                line += f"{pieces[piece_name][print_color]} "
+
+        print(f"{line}] - {i + 1}")
+
+    print("  |  |  |  |  |  |  |  | ")
+    print("  h  g  f  e  d  c  b  a")
+
+    print("________________________")
+
+
+def print_board_light(game):
+    print()
+    print("type RESET as your move at any time to head back to the main menu")
+    if game.to_move == Color.WHITE:
+        print_white_side_light(game)
+
+    else:
+        print_black_side_light(game)
+
+def print_white_side_light(game: BoardManager):
+    pieces = {"Pawn" : ["♟ ", "♙ "],
+              "Rook" : ["♜ ", "♖ "],
+              "Knight" :["♞ ", "♘ "],
+              "Bishop" : ["♝ ", "♗ "],
+              "Queen" : ["♛ ", "♕ "],
+              "King" : ["♚ ", "♔ "],
+              }
+
+    print()
+    print("      White to move     ")
+    print("________________________")
+    for i in range(8):
+        line = "[ "
+        for j in range(8):
+            if game.board[j][7 - i] is None:
+                line += "-- "
+
+            else:
+                piece = game.board[j][7 - i]
+                if piece.color == Color.WHITE:
+                    print_color = 1
+
+                else:
+                    print_color = 0
+                piece_name = type(piece).__name__
+                line += f"{pieces[piece_name][print_color]} "
+
+        print(f"{line}] - {8 - i}")
+
+    print("  |  |  |  |  |  |  |  |")
+    print("  a  b  c  d  e  f  g  h")
+    print("________________________")
+
+def print_black_side_light(game):
+    pieces = {"Pawn" : ["♟ ", "♙ "],
+              "Rook" : ["♜ ", "♖ "],
+              "Knight" :["♞ ", "♘ "],
+              "Bishop" : ["♝ ", "♗ "],
+              "Queen" : ["♛ ", "♕ "],
+              "King" : ["♚ ", "♔ "],
+              }
+
+    print()
+    print("      Black to move     ")
+    print("________________________")
+    for i in range(8):
+        line = "[ "
+        for j in range(8):
+            if game.board[7 - j][i] is None:
+                line += "-- "
+            else:
+                piece = game.board[7 - j][i]
+                if piece.color == Color.WHITE:
+                    print_color = 1
+
+                else:
+                    print_color = 0
+
+                piece_name = type(piece).__name__
+                line += f"{pieces[piece_name][print_color]} "
+
+        print(f"{line}] - {i + 1}")
+
+    print("  |  |  |  |  |  |  |  | ")
+    print("  h  g  f  e  d  c  b  a")
+
+    print("________________________")
+
 
 
 if __name__ == "__main__":

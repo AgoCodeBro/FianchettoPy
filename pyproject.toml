@@ -15,4 +15,4 @@ package-dir = {"" = "src"}
 packages = ["fianchetto", "fianchetto.core", "fianchetto.cli"]
 
 [project.scripts]
-fianchetto = "fianchetto.cli.main_cli:main"
+fianchetto = "fianchetto.main:main"
