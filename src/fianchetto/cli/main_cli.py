@@ -43,9 +43,9 @@ def main(mode):
                 
                 quit()
 
-                
+
             print_board(game)
-            alg_move = input("Please enter a move by entering the starting and ending coordinates seprataed by commas (Ex: g1, f3): ")
+            alg_move = input("Please enter a move in standard algebreic notation (i.e, e4 or Nbxc6): ")
 
             if alg_move.lower() == "reset":
                 keep_going = False

@@ -39,83 +39,61 @@ class BoardManager():
         self.check = None
         self.mate = None
 
-    def move(self, start: tuple[int, int], end: tuple[int, int]) -> None:
+    def move(self, move: str) -> None:
         """Makes a chess move on the board. If the move is not valid it will throw an error
 
         Args:
             start (tuple[int, int]): The coordinates of the square that the piece to be moved is on
             end (tuple[int, int]): The coordinates of the square that the piece will end up on
         """
-        # Check that starting square is on the board
-        if start[0] < 0 or start[0] > 7 or start[1] < 0 or start[1] > 7:
-            raise ValueError("This piece is off the board")
+        letters_to_num = {"a" : 0,
+                        "b" : 1,
+                        "c" : 2,
+                        "d" : 3,
+                        "e" : 4,
+                        "f" : 5,
+                        "g" : 6,
+                        "h" : 7,
+                        }
         
-        piece = self.board[start[0]][start[1]]
+        # Check if its a pawn move (not a take)
+        if len(move) == 2:
+            try:
+                x = letters_to_num[move[0]]
+                y = int(move[1])
 
-
-        # Check if a piece was selected
-        if piece is not None:
-            legal_moves = piece.generate_valid_moves(start, self)
-
-            # Check if piece is the correct color
-            if piece.color != self.to_move and not self.debug:
-                raise ValueError("The piece is the wrong color")
-
-            # Check if the attempted move is allowed
-            if end in legal_moves:
-                self._free_move(start, end)
-                piece.has_moved = True
-
-                # Check if a player just castled and finish catselting
-                if type(piece).__name__ == "King" and (start[0] - end[0] > 1 or start[0] - end[0] < -1):
-                    if end[0] == 6:
-                        self._free_move((7, end[1]), (5, end[1]))
-
-                    elif end[0] == 2:
-                        self._free_move((0, end[1]), (3, end[1]))
-
-                if self.en_passant:
-                    # Check if En Passant was just played, if it was, remove the pawn
-                    if type(piece).__name__ == "Pawn":
-                        if end == (self.en_passant_pos[0], self.en_passant_pos[1] + 1) or end == (self.en_passant_pos[0], self.en_passant_pos[1] - 1):
-                            self.board[self.en_passant_pos[0]][self.en_passant_pos[1]] = None
-
-                # If the king moved update its position
-                if type(piece).__name__ == "King":
-                    if piece.color == Color.WHITE:
-                        self.white_king_pos = end
-
-                    else:
-                        self.black_king_pos = end
-
-                # See if the player put their opponent in check.
-                if piece.color == Color.WHITE:
-                    opp_king = self.board[self.black_king_pos[0]][self.black_king_pos[1]]
-
-                else:
-                    opp_king = self.board[self.white_king_pos[0]][self.white_king_pos[1]]
-
-                if opp_king is not None and opp_king.in_check(self):
-                    # King might be none durring debuging
-                    self.check = opp_king.color
-
-                else:
-                    self.check  = None
-
-
-                self._check_en_passant(piece, start, end)
-
-                self._check_promotion(piece, end)
-
-                self._check_for_mates()
-
-                self._change_turn()
-                           
-            else:
-                raise ValueError("Not a legal move")
+            except:
+                raise ValueError("Please enter a vaild mpve")
             
-        else: 
-            raise ValueError("No piece selected")
+            self._check_pawn_move(x, y)
+
+        
+        if len(move) == 3:
+            # If its a take, its a pawn take
+            if 'x' in move:
+                try:
+                    x = letters_to_num[move[0]]
+                    y = int(move[1])
+
+                except:
+                    raise ValueError("Please enter a vaild mpve")
+                
+                
+
+    def _check_pawn_move(self, x, y):
+        if self.to_move == Color.WHITE:
+            direction = 1
+        else:
+            direction = - 1
+        if self.board[x][y - direction] is not None and self.board[x][y - direction].color == self.to_move:
+            self.board[x][y - direction].generate_valid_moves()
+
+        elif self.board[x][y - direction * 2] is not None and self.board[x][y - direction * 2].color == self.to_move:
+            self.board[x][y - direction * 2].generate_valid_moves()
+
+
+        
+
 
     def _check_for_mates(self) -> None:
         """Checks to see if there is either checkmate or stalemate on the board and sets the mate attribute accordingly"""
