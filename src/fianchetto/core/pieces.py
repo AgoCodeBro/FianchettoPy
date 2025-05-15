@@ -174,7 +174,7 @@ class Pawn(Piece):
             if next_square is not None and next_square.color != self.color:
                 moves.append((position[0] + 1, position[1] + move_direction))
 
-        if position[0] - 1  <= 7:
+        if position[0] - 1  >= 0:
             next_square = game.board[position[0] - 1][position[1] + move_direction]
 
             if next_square is not None and next_square.color != self.color:
